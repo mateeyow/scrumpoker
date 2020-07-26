@@ -1,0 +1,46 @@
+{
+  "env": {
+    "browser": true,
+    "es2020": true
+  },
+  "extends": [
+    "plugin:prettier/recommended",
+    "plugin:react/recommended",
+    "airbnb"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
+  "plugins": ["react"],
+  "rules": {
+    "prettier/prettier": ["error", {
+      "singleQuote": true,
+      "semi": false,
+      "trailingComma": "es5"
+    }],
+    "semi": ["error", "never"],
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "comma-dangle": ["error", {
+      "arrays": "only-multiline",
+      "objects": "only-multiline",
+      "imports": "never",
+      "exports": "never",
+      "functions": "never"
+    }],
+    "global-require": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "react/prop-types": ["error", { "ignore": ["children", "className"] }],
+    "react/require-default-props": "off",
+    "import/no-extraneous-dependencies": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/forbid-prop-types": "off",
+    "react/no-array-index-key": "off",
+    "object-curly-newline": ["error", { "consistent": "true" }],
+    "react/button-has-type": "off"
+  },
+  "ignorePatterns": ["src/serviceWorker.js"]
+}

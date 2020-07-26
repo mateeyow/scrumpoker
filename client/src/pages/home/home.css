@@ -1,0 +1,16 @@
+hr.divider::before {
+  position: absolute;
+  top: -15px;
+  left: 45%;
+  content: 'OR';
+  background-color: white;
+  padding-left: 8px;
+  padding-right: 8px;
+  font-weight: bold;
+}
+
+@media (min-width: 1024px) {
+  hr.divider::before {
+    left: 50%;
+  }
+}
