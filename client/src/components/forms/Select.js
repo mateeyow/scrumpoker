@@ -1,14 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const Select = ({ options = [], ...rest }) => (
+const Select = ({ options = [], register = () => {}, validation = {}, errors = {}, ...rest }) => (
   <div className='relative'>
     <select
       className='shadow appearance-none border rounded w-full p-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+      ref={register}
       {...rest}
     >
       {options.map((option, idx) => (
-        <option key={`${option}-${idx}`}>{option}</option>
+        <option key={`${option}-${idx}`} value={option.value}>
+          {option.name}
+        </option>
       ))}
     </select>
     <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
@@ -20,7 +23,10 @@ const Select = ({ options = [], ...rest }) => (
 )
 
 Select.propTypes = {
-  options: PropTypes.array,
+  options: PropTypes.arrayOf(PropTypes.shape({ name: PropTypes.string, value: PropTypes.string })),
+  register: PropTypes.func,
+  validation: PropTypes.object,
+  errors: PropTypes.object,
 }
 
 export default Select

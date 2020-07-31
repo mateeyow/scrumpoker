@@ -10,6 +10,7 @@
     "prettier",
     "prettier/react"
   ],
+  "parser": "babel-eslint",
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -46,7 +47,9 @@
     "react/jsx-one-expression-per-line": "off",
     "object-curly-newline": ["error", { "consistent": true }],
     "react/button-has-type": "off",
-    "indent": "off"
+    "indent": "off",
+    "no-console": ["error", { "allow": ["warn", "error"]}],
+    "import/no-unresolved": "off"
   },
   "ignorePatterns": ["src/serviceWorker.js"]
 }

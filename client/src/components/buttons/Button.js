@@ -12,15 +12,18 @@ const Button = ({
   type = 'button',
   size = 'medium',
   kind = 'primary',
+  disabled = false,
   ...rest
 }) => {
   const pad = size === 'medium' ? 'py-2' : 'py-1'
   const textColor = kind === 'reverse' ? '' : 'text-white'
+  const isDisabled = disabled ? 'cursor-not-allowed opacity-50' : ''
 
   return (
     <button
-      className={`uppercase font-bold px-4 rounded focus:shadow-outline focus:outline-none shadow-md ${className} ${pad} ${kindColor[kind]} ${textColor}`}
+      className={`uppercase font-bold px-4 rounded focus:shadow-outline focus:outline-none shadow-md ${className} ${pad} ${kindColor[kind]} ${textColor} ${isDisabled}`}
       type={type}
+      disabled={disabled}
       {...rest}
     >
       {children}
@@ -32,6 +35,7 @@ Button.propTypes = {
   type: PropTypes.string,
   size: PropTypes.oneOf(['small', 'medium']),
   kind: PropTypes.oneOf(['primary', 'danger', 'reverse']),
+  disabled: PropTypes.bool,
 }
 
 export default Button
