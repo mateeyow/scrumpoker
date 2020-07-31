@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --biqmind-blue: #23347a;
+  --gold: #CCB34E;
+  --dark-gold: #84732E;
+}

@@ -1,0 +1,21 @@
+.card {
+  height: 250px;
+  width: 175px;
+  /* background-color: var(--biqmind-blue); */
+  background-color: var(--gold);
+  border: 1px solid var(--dark-gold);
+}
+
+.card.card-lowest {
+  box-shadow: 0px 0px 8px 4px #fc8181;
+}
+
+.card.card-highest {
+  box-shadow: 0px 0px 8px 4px #81e6d9;
+}
+
+.card-remove {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+}

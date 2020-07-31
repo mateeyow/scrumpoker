@@ -1,26 +1,30 @@
 {
   "env": {
     "browser": true,
-    "es2020": true
+    "es2020": true,
+    "es6": true
   },
   "extends": [
-    "plugin:prettier/recommended",
     "plugin:react/recommended",
-    "airbnb"
+    "airbnb",
+    "prettier",
+    "prettier/react"
   ],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
     },
     "ecmaVersion": 11,
-    "sourceType": "module"
+    "sourceType": "module",
   },
-  "plugins": ["react"],
+  "plugins": ["react", "prettier"],
   "rules": {
     "prettier/prettier": ["error", {
       "singleQuote": true,
+      "printWidth": 100,
       "semi": false,
-      "trailingComma": "es5"
+      "trailingComma": "es5",
+      "jsxSingleQuote": true
     }],
     "semi": ["error", "never"],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
@@ -39,8 +43,10 @@
     "react/jsx-props-no-spreading": "off",
     "react/forbid-prop-types": "off",
     "react/no-array-index-key": "off",
-    "object-curly-newline": ["error", { "consistent": "true" }],
-    "react/button-has-type": "off"
+    "react/jsx-one-expression-per-line": "off",
+    "object-curly-newline": ["error", { "consistent": true }],
+    "react/button-has-type": "off",
+    "indent": "off"
   },
   "ignorePatterns": ["src/serviceWorker.js"]
 }
