@@ -4,6 +4,7 @@
   /* background-color: var(--biqmind-blue); */
   background-color: var(--gold);
   border: 1px solid var(--dark-gold);
+  cursor: pointer;
 }
 
 .card.card-lowest {

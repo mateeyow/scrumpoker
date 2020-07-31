@@ -4,7 +4,7 @@ import Container from '../../components/Container'
 import Label from '../../components/texts/Label'
 import Input from '../../components/forms/Input'
 import Button from '../../components/buttons/Button'
-import Card from '../../components/card/Card'
+import CardWithDetails from '../../components/card/CardWithDetails'
 
 const members = [
   {
@@ -64,7 +64,7 @@ const SessionMaster = () => (
     <Container className='lg:w-10/12'>
       <div className='flex justify-around w-full flex-wrap'>
         {members.map((member) => (
-          <Card key={member.id} data={member} />
+          <CardWithDetails key={member.id} data={member} />
         ))}
       </div>
     </Container>
