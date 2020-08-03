@@ -5,7 +5,7 @@ import './card.css'
 
 const Card = ({ closeEl, score }) => {
   return (
-    <div className='card flex items-center justify-center text-white border rounded-lg text-4xl font-bold relative shadow'>
+    <div className='card flex items-center justify-center text-white border rounded-lg text-4xl font-bold relative shadow mx-auto'>
       {closeEl}
       {score || <img src={BiqLogo} alt='no score' />}
     </div>

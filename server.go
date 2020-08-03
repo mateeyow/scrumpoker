@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/mateeyow/scrumpoker/controllers"
+	"github.com/mateeyow/scrumpoker/pkg/socket"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -20,6 +21,7 @@ func main() {
 	// Echo instance
 	e := echo.New()
 	v1 := e.Group("/v1")
+	hub := socket.NewHub()
 
 	// Middleware
 	e.Use(middleware.Logger())
@@ -27,7 +29,12 @@ func main() {
 
 	// Routes
 	e.GET("/healthz", controllers.HealthCheck)
-	e.GET("/ws", controllers.Websocket)
+	e.GET("/ws/:roomId", func(c echo.Context) error {
+		rID := c.Param("roomId")
+		go hub.Run(rID)
+		err := socket.ServeWs(hub, c)
+		return err
+	})
 
 	// Room routes
 	room := v1.Group("/room")

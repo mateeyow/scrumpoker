@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/Kamva/mgm/v3"
-	"github.com/mateeyow/scrumpoker/utils"
+	"github.com/mateeyow/scrumpoker/pkg/utils"
 )
 
 type Room struct {

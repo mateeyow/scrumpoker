@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import { useFetch } from 'utils/hooks'
 import fetch from 'utils/fetch'
@@ -8,8 +8,10 @@ import Label from 'components/texts/Label'
 import Input from 'components/forms/Input'
 import Button from 'components/buttons/Button'
 import CardWithDetails from 'components/card/CardWithDetails'
+import WS from 'utils/ws'
 
 const SessionMaster = () => {
+  const socket = useRef({})
   const { roomId } = useParams()
   const history = useHistory()
   const [btnText, setBtnText] = useState('Copy URL')
@@ -31,6 +33,21 @@ const SessionMaster = () => {
 
     return () => clearTimeout(timer)
   }, [btnText])
+
+  useEffect(() => {
+    socket.current = new WS(roomId)
+    console.log('socket.current:', socket.current)
+    socket.current.onopen = () => {
+      socket.current.send('YOWZA')
+    }
+    socket.current.onmessage = (data) => {
+      console.log('data', data)
+    }
+
+    return function cleanup() {
+      socket.current.close()
+    }
+  }, [])
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(roomUrl)
@@ -81,12 +98,20 @@ const SessionMaster = () => {
       </Container>
       <div className='flex items-center flex-wrap flex-col justify-center lg:flex-row'>
         <h1 className='pt-6 mr-4'>{room.title}</h1>
-        <Button>Start Voting</Button>
+        <Button
+          onClick={() => {
+            socket.current.send('YOWWW')
+          }}
+        >
+          Start Voting
+        </Button>
       </div>
       <Container className='lg:w-10/12'>
         <div className='flex justify-around w-full flex-wrap'>
           {members.map((member) => (
-            <CardWithDetails key={member.id} data={member} />
+            <div className='w-1/6' key={member.id}>
+              <CardWithDetails data={member} />
+            </div>
           ))}
         </div>
       </Container>

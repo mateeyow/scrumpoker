@@ -8,12 +8,12 @@ import (
 	"github.com/Kamva/mgm/v3"
 	"github.com/labstack/echo/v4"
 	"github.com/mateeyow/scrumpoker/models"
-	"github.com/mateeyow/scrumpoker/utils"
+	"github.com/mateeyow/scrumpoker/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-var logger = log.WithFields(log.Fields{"file": "room.go"})
+var logger = log.WithFields(log.Fields{"folder": "controllers"})
 
 // CreateRoom API for creating new SCRUM room
 func CreateRoom(ctx echo.Context) (err error) {
