@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import fetch from 'utils/fetch'
+import WS from './ws'
+import { noop } from './utils'
 
 export const useFetch = (url, method = 'get', data) => {
   const [response, setResponse] = useState(null)
@@ -22,4 +24,19 @@ export const useFetch = (url, method = 'get', data) => {
   return [response, loading, error]
 }
 
-export const noop = () => {}
+export const useWS = (room) => {
+  const socket = useRef({})
+  useEffect(() => {
+    if (room?.roomId) {
+      socket.current = new WS(room.roomId)
+
+      return function cleanup() {
+        socket.current.close()
+      }
+    }
+
+    return noop
+  }, [room])
+
+  return socket.current
+}

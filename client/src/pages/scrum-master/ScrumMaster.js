@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
-import { useFetch } from 'utils/hooks'
+import { useFetch, useWS } from 'utils/hooks'
 import fetch from 'utils/fetch'
 import HTMLTitle from 'components/HTMLTitle'
 import Container from 'components/Container'
@@ -8,18 +8,21 @@ import Label from 'components/texts/Label'
 import Input from 'components/forms/Input'
 import Button from 'components/buttons/Button'
 import CardWithDetails from 'components/card/CardWithDetails'
-import WS from 'utils/ws'
 
 const SessionMaster = () => {
-  const socket = useRef({})
   const { roomId } = useParams()
   const history = useHistory()
   const [btnText, setBtnText] = useState('Copy URL')
   const [room, isLoading, error] = useFetch(`room/${roomId}`)
+  const socket = useWS(room)
 
   const members = []
   const { protocol, host } = window.location
   const roomUrl = `${protocol}//${host}/room/${roomId}`
+
+  socket.onmessage = (data) => {
+    console.log('data:', data)
+  }
 
   useEffect(() => {
     if (btnText !== 'Copied!') {
@@ -34,22 +37,10 @@ const SessionMaster = () => {
     return () => clearTimeout(timer)
   }, [btnText])
 
-  useEffect(() => {
-    socket.current = new WS(roomId)
-    console.log('socket.current:', socket.current)
-    socket.current.onopen = () => {
-      socket.current.send('YOWZA')
-    }
-    socket.current.onmessage = (data) => {
-      console.log('data', data)
-    }
-
-    return function cleanup() {
-      socket.current.close()
-    }
-  }, [])
-
   const copyToClipboard = () => {
+    const input = document.getElementById('title')
+    input.select()
+
     navigator.clipboard.writeText(roomUrl)
     setBtnText('Copied!')
   }
@@ -100,7 +91,7 @@ const SessionMaster = () => {
         <h1 className='pt-6 mr-4'>{room.title}</h1>
         <Button
           onClick={() => {
-            socket.current.send('YOWWW')
+            socket.send('YOWWW')
           }}
         >
           Start Voting

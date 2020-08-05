@@ -22,6 +22,7 @@ func main() {
 	e := echo.New()
 	v1 := e.Group("/v1")
 	hub := socket.NewHub()
+	go hub.Run()
 
 	// Middleware
 	e.Use(middleware.Logger())
@@ -30,9 +31,7 @@ func main() {
 	// Routes
 	e.GET("/healthz", controllers.HealthCheck)
 	e.GET("/ws/:roomId", func(c echo.Context) error {
-		rID := c.Param("roomId")
-		go hub.Run(rID)
-		err := socket.ServeWs(hub, c)
+		err := controllers.Websocket(hub, c)
 		return err
 	})
 

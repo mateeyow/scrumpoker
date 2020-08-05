@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useHistory } from 'react-router-dom'
-import fetch from '../../utils/fetch'
-import Label from '../../components/texts/Label'
-import Input from '../../components/forms/Input'
-import Button from '../../components/buttons/Button'
+import Label from 'components/texts/Label'
+import Input from 'components/forms/Input'
+import Button from 'components/buttons/Button'
+import { generateID } from 'utils/utils'
+import fetch from 'utils/fetch'
 
 const validation = { required: 'This field is required' }
 
@@ -17,6 +18,7 @@ const JoinRoom = () => {
       const { data: responseData } = await fetch.get(`room/${data.roomId}`)
       history.push(`/room/${responseData.roomId}`)
       localStorage.setItem('name', data.name)
+      generateID()
     } catch (err) {
       if (err.response.status === 404) {
         return setError('roomId', { type: 'manual', message: 'Room number not found' })

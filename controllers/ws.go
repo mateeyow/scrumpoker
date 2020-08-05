@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/mateeyow/scrumpoker/models"
+	"github.com/mateeyow/scrumpoker/pkg/socket"
 	"github.com/mateeyow/scrumpoker/pkg/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -20,7 +20,7 @@ var (
 	}
 )
 
-func Websocket(ctx echo.Context) (err error) {
+func Websocket(hub *socket.Hub, ctx echo.Context) (err error) {
 	rID := ctx.Param("roomId")
 	upgrader.CheckOrigin = func(r *http.Request) bool {
 		host := r.Host
@@ -32,7 +32,7 @@ func Websocket(ctx echo.Context) (err error) {
 	}
 
 	ws, err := upgrader.Upgrade(ctx.Response(), ctx.Request(), nil)
-	defer ws.Close()
+
 	if err != nil {
 		logger.Error(utils.LogError("Error initializing websocket", err))
 		ctx.Error(err)
@@ -48,20 +48,16 @@ func Websocket(ctx echo.Context) (err error) {
 		return
 	}
 
-	fmt.Println(room)
-
-	for {
-		// Read
-		_, msg, err := ws.ReadMessage()
-		if err != nil {
-			ctx.Logger().Error(err)
-		}
-		fmt.Printf("%s\n", msg)
-
-		// Write
-		err = ws.WriteMessage(websocket.TextMessage, []byte(msg))
-		if err != nil {
-			ctx.Logger().Error(err)
-		}
+	client := &socket.Client{
+		Hub:  hub,
+		Conn: ws,
+		Send: make(chan []byte, 256),
+		Room: rID,
 	}
+
+	client.Hub.Register <- client
+	go client.WritePump()
+	go client.ReadPump()
+
+	return nil
 }

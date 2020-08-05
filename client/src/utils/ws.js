@@ -1,10 +1,10 @@
+import { noop } from './utils'
+
 const getUrl = (url) => {
   const { host, protocol } = window.location
   const wsProtocol = protocol === 'http:' ? 'ws' : 'wss'
   return `${wsProtocol}://${host}/ws/${url}`
 }
-
-const noop = () => {}
 
 class WS {
   constructor(url) {

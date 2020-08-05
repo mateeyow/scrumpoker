@@ -16,6 +16,7 @@
     "react-hook-form": "^6.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
+    "shortid": "^2.2.15",
     "tailwindcss": "^1.5.2"
   },
   "scripts": {

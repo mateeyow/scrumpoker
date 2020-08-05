@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useFetch } from 'utils/hooks'
 import Container from 'components/Container'
 import Card from 'components/card/Card'
 import HTMLTitle from 'components/HTMLTitle'
@@ -9,22 +8,39 @@ import Modal from 'components/modal/Modal'
 import Input from 'components/forms/Input'
 import Label from 'components/texts/Label'
 import Button from 'components/buttons/Button'
+import { useFetch, useWS } from 'utils/hooks'
+import { generateID, getName } from 'utils/utils'
 
-// TODO: Ask user to set name if no name is found on localStorage
 const Member = () => {
   const { roomId } = useParams()
   const [room, isLoading, error] = useFetch(`room/${roomId}`)
-  const [nameValue, setNameValue] = useState('')
+  const socket = useWS(room)
+  const [nameValue, setNameValue] = useState(getName())
   const [isOpen, setIsOpen] = useState(false)
   const cards = room?.type ? cardTypes[room.type] : []
 
+  const sendDetails = () => {
+    if (nameValue) {
+      const id = localStorage.getItem('id') || generateID()
+      socket.send(JSON.stringify({ action: 'register', name: nameValue, id }))
+    }
+  }
+
   const saveName = () => {
     localStorage.setItem('name', nameValue)
+    generateID()
     setIsOpen(false)
+    setNameValue(nameValue)
+    sendDetails()
+  }
+
+  socket.onopen = sendDetails
+  socket.onmessage = (data) => {
+    console.log('data', data)
   }
 
   useEffect(() => {
-    const name = localStorage.getItem('name')
+    const name = getName()
     if (!name) {
       setIsOpen(true)
     }
@@ -57,7 +73,7 @@ const Member = () => {
         isOpen={isOpen}
         title='Name Required!'
         buttons={
-          <Button size='sm' onClick={saveName}>
+          <Button size='small' onClick={saveName}>
             Save
           </Button>
         }
