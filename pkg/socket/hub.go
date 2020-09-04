@@ -2,18 +2,14 @@ package socket
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/mateeyow/scrumpoker/pkg/utils"
 )
-
-type Hub struct {
-	Clients    map[string]map[*Client]bool
-	Broadcast  chan Message
-	Register   chan *Client
-	Unregister chan *Client
-}
 
 func NewHub() *Hub {
 	return &Hub{
@@ -22,18 +18,6 @@ func NewHub() *Hub {
 		Unregister: make(chan *Client),
 		Clients:    make(map[string]map[*Client]bool),
 	}
-}
-
-type Message struct {
-	data []byte
-	room string
-}
-
-type Client struct {
-	Hub  *Hub
-	Conn *websocket.Conn
-	Send chan []byte
-	Room string
 }
 
 const (
@@ -58,12 +42,27 @@ func (c *Client) ReadPump() {
 	c.Conn.SetPongHandler(func(string) error { c.Conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
 		_, message, err := c.Conn.ReadMessage()
+
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error: %v", err)
 			}
 			break
 		}
+
+		fmt.Printf("message: %s\n\n", message)
+		var msg WSData
+		if err = json.Unmarshal(message, &msg); err != nil {
+			utils.LogError("Error converting json", err)
+		}
+
+		switch msg.Action {
+		case WSActionJoin:
+			fmt.Printf("\n\n THIS IS A REGISTER! \n\n")
+		default:
+			fmt.Printf("\n\nNOT A PROPER ACTION %s\n\n", msg.Action)
+		}
+
 		m := Message{data: bytes.TrimSpace(bytes.Replace(message, newline, space, -1)), room: c.Room}
 		c.Hub.Broadcast <- m
 	}

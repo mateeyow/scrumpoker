@@ -10,6 +10,7 @@ import Label from 'components/texts/Label'
 import Button from 'components/buttons/Button'
 import { useFetch, useWS } from 'utils/hooks'
 import { generateID, getName } from 'utils/utils'
+import actions from 'constants/actions'
 
 const Member = () => {
   const { roomId } = useParams()
@@ -22,7 +23,9 @@ const Member = () => {
   const sendDetails = () => {
     if (nameValue) {
       const id = localStorage.getItem('id') || generateID()
-      socket.send(JSON.stringify({ action: 'register', name: nameValue, id }))
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ action: actions.JOIN, data: { name: nameValue, id } }))
+      }
     }
   }
 
@@ -35,8 +38,9 @@ const Member = () => {
   }
 
   socket.onopen = sendDetails
-  socket.onmessage = (data) => {
-    console.log('data', data)
+  socket.onmessage = (evt) => {
+    const { data } = evt
+    console.log('data:', data)
   }
 
   useEffect(() => {
