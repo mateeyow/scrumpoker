@@ -24,7 +24,7 @@ const Member = () => {
     if (nameValue) {
       const id = localStorage.getItem('id') || generateID()
       if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ action: actions.JOIN, data: { name: nameValue, id } }))
+        socket.send(JSON.stringify({ action: actions.JOIN, data: { name: nameValue, uuid: id } }))
       }
     }
   }
@@ -39,8 +39,7 @@ const Member = () => {
 
   socket.onopen = sendDetails
   socket.onmessage = (evt) => {
-    const { data } = evt
-    console.log('data:', data)
+    console.log('evt', evt.data)
   }
 
   useEffect(() => {

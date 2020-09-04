@@ -37,3 +37,8 @@ type WSData struct {
 	Action WSAction               `json:"action"`
 	Data   map[string]interface{} `json:"data"`
 }
+
+type WSResponse struct {
+	Action WSAction    `json:"action"`
+	Data   interface{} `json:"data"`
+}

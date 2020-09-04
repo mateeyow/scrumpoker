@@ -20,7 +20,7 @@ func CreateRoom(ctx echo.Context) (err error) {
 	title := ctx.FormValue("title")
 	roomType := ctx.FormValue("type")
 
-	err, room := models.NewRoom(title, roomType)
+	room, err := models.NewRoom(title, roomType)
 	if err != nil {
 		logger.Error(utils.LogError("Error generating new room", err))
 		return

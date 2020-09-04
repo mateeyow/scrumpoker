@@ -8,20 +8,26 @@ import Label from 'components/texts/Label'
 import Input from 'components/forms/Input'
 import Button from 'components/buttons/Button'
 import CardWithDetails from 'components/card/CardWithDetails'
+import actions from 'constants/actions'
 
 const SessionMaster = () => {
   const { roomId } = useParams()
   const history = useHistory()
   const [btnText, setBtnText] = useState('Copy URL')
+  const [members, setMembers] = useState([])
   const [room, isLoading, error] = useFetch(`room/${roomId}`)
   const socket = useWS(room)
 
-  const members = []
   const { protocol, host } = window.location
   const roomUrl = `${protocol}//${host}/room/${roomId}`
 
-  socket.onmessage = (data) => {
-    console.log('data:', data)
+  socket.onmessage = (evt) => {
+    const { data } = evt
+    const msg = JSON.parse(data)
+
+    if (msg.action === actions.JOIN) {
+      setMembers(msg.data)
+    }
   }
 
   useEffect(() => {
