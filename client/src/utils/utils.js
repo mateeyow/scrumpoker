@@ -14,3 +14,7 @@ export const generateID = () => {
 export const noop = () => {}
 
 export const getName = () => localStorage.getItem('name')
+
+export const sendAction = (action, data) => {
+  return JSON.stringify({ action, data })
+}

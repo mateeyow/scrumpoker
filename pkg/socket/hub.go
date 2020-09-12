@@ -51,7 +51,6 @@ func (c *Client) ReadPump() {
 			break
 		}
 
-		fmt.Printf("message: %s\n\n", message)
 		var msg WSData
 		if err = json.Unmarshal(message, &msg); err != nil {
 			utils.LogError("Error converting json", err)
@@ -64,6 +63,7 @@ func (c *Client) ReadPump() {
 				uuid   string
 				exists bool
 			)
+
 			if name, exists = msg.Data["name"].(string); !exists {
 				// TODO: Please handle error
 				fmt.Printf("Handle error here\n")
@@ -74,8 +74,8 @@ func (c *Client) ReadPump() {
 			}
 
 			prtcpnt := models.NewParticipant(name, uuid)
-			room := &models.Room{}
 
+			room := &models.Room{}
 			room, err = room.FindOneOrNil(c.Room)
 			if err != nil {
 				// TODO: Do something with error
@@ -94,6 +94,18 @@ func (c *Client) ReadPump() {
 					fmt.Printf("err: %#v\n\n", err)
 					// TODO: Do something with error
 				}
+			} else {
+				idx, foundPrtcpnt := room.FindParticipant(prtcpnt.UUID)
+
+				if foundPrtcpnt.UUID != "" && foundPrtcpnt.Name != prtcpnt.Name {
+					// Edit the participant
+					room.Participants[idx] = *prtcpnt
+					err = room.Update()
+					if err != nil {
+						fmt.Printf("err: %#v\n\n", err)
+						// TODO: Do something with error
+					}
+				}
 			}
 
 			// fmt.Printf("ROOM: %T\n\n", fmt.Sprintf("%v", room))
@@ -101,6 +113,36 @@ func (c *Client) ReadPump() {
 			res := WSResponse{
 				Action: WSActionJoin,
 				Data:   room.Participants,
+			}
+			json.NewEncoder(resByte).Encode(res)
+			m := Message{data: resByte.Bytes(), room: c.Room}
+			c.Hub.Broadcast <- m
+		case WSActionVote:
+			uuid, exists := msg.Data["uuid"].(string)
+			if !exists {
+				// TODO: Please handle error
+				fmt.Printf("Handle error here\n")
+			}
+
+			room := &models.Room{}
+			room, err = room.FindOneOrNil(c.Room)
+			if err != nil || room == nil {
+				// TODO: Do something with error
+			}
+
+			idx, participant := room.FindParticipant(uuid)
+			score, exists := msg.Data["score"].(string)
+			if !exists {
+				// TODO: Please handle error
+				fmt.Printf("Handle error here\n")
+			}
+			participant.Score = score
+			room.Participants[idx] = participant
+
+			resByte := new(bytes.Buffer)
+			res := WSResponse{
+				Action: WSActionVote,
+				Data:   participant,
 			}
 			json.NewEncoder(resByte).Encode(res)
 			m := Message{data: resByte.Bytes(), room: c.Room}

@@ -19,8 +19,9 @@ type Room struct {
 }
 
 type Participant struct {
-	Name string `json:"name"`
-	UUID string `json:"uuid"`
+	Name  string `json:"name"`
+	UUID  string `json:"uuid"`
+	Score string `json:"score,omitempty"`
 }
 
 func (rm *Room) FindOneOrNil(id string) (*Room, error) {
@@ -49,6 +50,19 @@ func (rm *Room) HasParticipant(uuid string) bool {
 
 func (rm *Room) Update() error {
 	return mgm.Coll(rm).Update(rm)
+}
+
+// FindParticipant finds the participant given a uuid in an slice of participants
+func (rm *Room) FindParticipant(uuid string) (idx int, part Participant) {
+	for i, val := range rm.Participants {
+		if val.UUID == uuid {
+			part = val
+			idx = i
+			break
+		}
+	}
+
+	return idx, part
 }
 
 func NewRoom(title, roomType string) (*Room, error) {

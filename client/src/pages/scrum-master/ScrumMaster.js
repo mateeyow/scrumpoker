@@ -9,6 +9,7 @@ import Input from 'components/forms/Input'
 import Button from 'components/buttons/Button'
 import CardWithDetails from 'components/card/CardWithDetails'
 import actions from 'constants/actions'
+import { noop } from 'utils/utils'
 
 const SessionMaster = () => {
   const { roomId } = useParams()
@@ -25,8 +26,23 @@ const SessionMaster = () => {
     const { data } = evt
     const msg = JSON.parse(data)
 
-    if (msg.action === actions.JOIN) {
-      setMembers(msg.data)
+    switch (msg.action) {
+      case actions.JOIN:
+        setMembers(msg.data)
+        break
+      case actions.VOTE:
+        const memberData = members.map((member) => {
+          if (member.uuid === msg.data.uuid) {
+            return msg.data
+          }
+
+          return member
+        })
+
+        setMembers(memberData)
+        break
+      default:
+        console.error('Not part of the action')
     }
   }
 
@@ -42,6 +58,12 @@ const SessionMaster = () => {
 
     return () => clearTimeout(timer)
   }, [btnText])
+
+  useEffect(() => {
+    if (room?.participants?.length > 0) {
+      setMembers(room.participants)
+    }
+  }, [room])
 
   const copyToClipboard = () => {
     const input = document.getElementById('title')
@@ -106,8 +128,8 @@ const SessionMaster = () => {
       <Container className='lg:w-10/12'>
         <div className='flex justify-around w-full flex-wrap'>
           {members.map((member) => (
-            <div className='w-1/6' key={member.id}>
-              <CardWithDetails data={member} />
+            <div className='w-1/6' key={member.uuid}>
+              <CardWithDetails data={member} onClick={noop} />
             </div>
           ))}
         </div>

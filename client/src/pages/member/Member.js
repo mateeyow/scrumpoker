@@ -9,7 +9,7 @@ import Input from 'components/forms/Input'
 import Label from 'components/texts/Label'
 import Button from 'components/buttons/Button'
 import { useFetch, useWS } from 'utils/hooks'
-import { generateID, getName } from 'utils/utils'
+import { generateID, getName, sendAction } from 'utils/utils'
 import actions from 'constants/actions'
 
 const Member = () => {
@@ -24,7 +24,7 @@ const Member = () => {
     if (nameValue) {
       const id = localStorage.getItem('id') || generateID()
       if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ action: actions.JOIN, data: { name: nameValue, uuid: id } }))
+        socket.send(sendAction(actions.JOIN, { name: nameValue, uuid: id }))
       }
     }
   }
@@ -49,6 +49,11 @@ const Member = () => {
     }
   }, [])
 
+  const onVote = (score) => {
+    const id = localStorage.getItem('id')
+    socket.send(sendAction(actions.VOTE, { name: nameValue, uuid: id, score }))
+  }
+
   if (error?.response?.status === 404) {
     return <h1>Not Found</h1>
   }
@@ -67,7 +72,7 @@ const Member = () => {
         <div className='flex justify-around w-full flex-wrap'>
           {cards.map((card, idx) => (
             <div className='w-1/4 mt-6' key={idx}>
-              <Card score={card.score} />
+              <Card score={card.score} onClick={onVote} />
             </div>
           ))}
         </div>

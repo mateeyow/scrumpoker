@@ -29,6 +29,7 @@ const (
 	WSActionJoin  WSAction = "join"
 	WSActionStart WSAction = "start"
 	WSActionReset WSAction = "reset"
+	WSActionVote  WSAction = "vote"
 )
 
 // WSData will be the primary message being circulated among the scrum master

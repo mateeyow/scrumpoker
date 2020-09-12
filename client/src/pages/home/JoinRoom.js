@@ -16,9 +16,9 @@ const JoinRoom = () => {
   const onJoinRom = async (data) => {
     try {
       const { data: responseData } = await fetch.get(`room/${data.roomId}`)
-      history.push(`/room/${responseData.roomId}`)
       localStorage.setItem('name', data.name)
       generateID()
+      history.push(`/room/${responseData.roomId}`)
     } catch (err) {
       if (err.response.status === 404) {
         return setError('roomId', { type: 'manual', message: 'Room number not found' })
