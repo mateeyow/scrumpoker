@@ -130,19 +130,55 @@ func (c *Client) ReadPump() {
 				// TODO: Do something with error
 			}
 
-			idx, participant := room.FindParticipant(uuid)
-			score, exists := msg.Data["score"].(string)
-			if !exists {
-				// TODO: Please handle error
-				fmt.Printf("Handle error here\n")
+			if room.HasStarted {
+				idx, participant := room.FindParticipant(uuid)
+				score, exists := msg.Data["score"].(string)
+				if !exists {
+					// TODO: Please handle error
+					fmt.Printf("Handle error here\n")
+				}
+				participant.Score = score
+				room.Participants[idx] = participant
+				err = room.Update()
+				if err != nil {
+					fmt.Printf("err: %#v\n\n", err)
+					// TODO: Do something with error
+				}
+
+				resByte := new(bytes.Buffer)
+				res := WSResponse{
+					Action: WSActionVote,
+					Data:   participant,
+				}
+				json.NewEncoder(resByte).Encode(res)
+				m := Message{data: resByte.Bytes(), room: c.Room}
+				c.Hub.Broadcast <- m
+			} else {
+				fmt.Printf("SCRUM has not yet started\n")
 			}
-			participant.Score = score
-			room.Participants[idx] = participant
+		case WSActionStart:
+			room := &models.Room{}
+			room, err = room.FindOneOrNil(c.Room)
+			if err != nil || room == nil {
+				// TODO: Do something with error
+			}
+
+			room.HasStarted = true
+
+			for idx := range room.Participants {
+				room.Participants[idx].Score = ""
+			}
+
+			err = room.Update()
+			if err != nil {
+				fmt.Printf("err: %#v\n\n", err)
+				// TODO: Do something with error
+			}
 
 			resByte := new(bytes.Buffer)
 			res := WSResponse{
-				Action: WSActionVote,
-				Data:   participant,
+				Action: WSActionStart,
+				Data:   room,
 			}
 			json.NewEncoder(resByte).Encode(res)
 			m := Message{data: resByte.Bytes(), room: c.Room}

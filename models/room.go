@@ -14,6 +14,7 @@ type Room struct {
 	RoomID           string        `json:"roomId" bson:"roomId"`
 	Title            string        `json:"title" bson:"title"`
 	Type             string        `json:"type" bson:"pages"`
+	HasStarted       bool          `json:"hasStarted" bson:"hasStarted"`
 	DeletedAt        *time.Time    `json:"deleted_at" bson:"deleted_at"`
 	Participants     []Participant `json:"participants" bson:"participants"`
 }

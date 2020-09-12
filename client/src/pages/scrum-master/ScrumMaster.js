@@ -9,7 +9,7 @@ import Input from 'components/forms/Input'
 import Button from 'components/buttons/Button'
 import CardWithDetails from 'components/card/CardWithDetails'
 import actions from 'constants/actions'
-import { noop } from 'utils/utils'
+import { noop, sendAction } from 'utils/utils'
 
 const SessionMaster = () => {
   const { roomId } = useParams()
@@ -40,6 +40,9 @@ const SessionMaster = () => {
         })
 
         setMembers(memberData)
+        break
+      case actions.START:
+        setMembers(msg.data?.participants)
         break
       default:
         console.error('Not part of the action')
@@ -119,7 +122,7 @@ const SessionMaster = () => {
         <h1 className='pt-6 mr-4'>{room.title}</h1>
         <Button
           onClick={() => {
-            socket.send('YOWWW')
+            socket.send(sendAction(actions.START))
           }}
         >
           Start Voting
