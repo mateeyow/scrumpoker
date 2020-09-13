@@ -23,3 +23,9 @@
   popd client
   make sc
 ```
+
+TODO:
+  - [ ] Deploy to production
+  - [ ] Fix UI/UX
+  - [ ] Add ability to connecto to JIRA
+  - [ ] Add some metrics for SCRUM master
