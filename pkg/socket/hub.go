@@ -156,7 +156,7 @@ func (c *Client) ReadPump() {
 			} else {
 				fmt.Printf("SCRUM has not yet started\n")
 			}
-		case WSActionStart:
+		case WSActionStart, WSActionReset:
 			room := &models.Room{}
 			room, err = room.FindOneOrNil(c.Room)
 			if err != nil || room == nil {
@@ -179,6 +179,37 @@ func (c *Client) ReadPump() {
 			res := WSResponse{
 				Action: WSActionStart,
 				Data:   room,
+			}
+			json.NewEncoder(resByte).Encode(res)
+			m := Message{data: resByte.Bytes(), room: c.Room}
+			c.Hub.Broadcast <- m
+		case WSActionKick:
+			room := &models.Room{}
+			room, err = room.FindOneOrNil(c.Room)
+			if err != nil || room == nil {
+				// TODO: Do something with error
+			}
+
+			uuid, exists := msg.Data["uuid"].(string)
+			if !exists {
+				// TODO: Please handle error
+				fmt.Printf("Handle error here\n")
+			}
+
+			idx, participant := room.FindParticipant(uuid)
+
+			room.Participants = room.RemoveParticipant(idx)
+			err = room.Update()
+			if err != nil {
+				fmt.Printf("err: %#v\n\n", err)
+				// TODO: Do something with error
+			}
+
+			resByte := new(bytes.Buffer)
+			res := WSResponse{
+				Action:   WSActionKick,
+				Data:     room,
+				Metadata: participant,
 			}
 			json.NewEncoder(resByte).Encode(res)
 			m := Message{data: resByte.Bytes(), room: c.Room}

@@ -8,6 +8,9 @@ const Card = ({ closeEl, score, onClick }) => {
     <div
       className='card flex items-center justify-center text-white border rounded-lg text-4xl font-bold relative shadow mx-auto'
       onClick={() => onClick(score)}
+      onKeyPress={() => onClick(score)}
+      role='button'
+      tabIndex={0}
     >
       {closeEl}
       {score || <img src={BiqLogo} alt='no score' />}
@@ -18,6 +21,7 @@ const Card = ({ closeEl, score, onClick }) => {
 Card.propTypes = {
   closeEl: PropTypes.node,
   score: PropTypes.string,
+  onClick: PropTypes.func,
 }
 
 export default Card

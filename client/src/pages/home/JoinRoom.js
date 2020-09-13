@@ -26,6 +26,8 @@ const JoinRoom = () => {
 
       console.error(err)
     }
+
+    return null
   }
 
   useEffect(() => {

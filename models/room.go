@@ -66,6 +66,11 @@ func (rm *Room) FindParticipant(uuid string) (idx int, part Participant) {
 	return idx, part
 }
 
+// RemoveParticipant removes the participant from a slice of participants
+func (rm *Room) RemoveParticipant(idx int) []Participant {
+	return append(rm.Participants[:idx], rm.Participants[idx+1:]...)
+}
+
 func NewRoom(title, roomType string) (*Room, error) {
 	rid, err := utils.GenerateRoomID()
 	if err != nil {

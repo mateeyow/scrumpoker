@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const Select = ({ options = [], register = () => {}, validation = {}, errors = {}, ...rest }) => (
+const Select = ({ options = [], register = () => {}, ...rest }) => (
   <div className='relative'>
     <select
       className='shadow appearance-none border rounded w-full p-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'

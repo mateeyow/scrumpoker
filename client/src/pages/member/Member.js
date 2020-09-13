@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
 import Container from 'components/Container'
 import Card from 'components/card/Card'
 import HTMLTitle from 'components/HTMLTitle'
@@ -14,6 +14,7 @@ import actions from 'constants/actions'
 
 const Member = () => {
   const { roomId } = useParams()
+  const history = useHistory()
   const [room, isLoading, error] = useFetch(`room/${roomId}`)
   const socket = useWS(room)
   const [nameValue, setNameValue] = useState(getName())
@@ -39,7 +40,20 @@ const Member = () => {
 
   socket.onopen = sendDetails
   socket.onmessage = (evt) => {
-    console.log('evt', evt.data)
+    const { data } = evt
+    const msg = JSON.parse(data)
+
+    switch (msg.action) {
+      case actions.KICK:
+        const id = localStorage.getItem('id')
+
+        if (msg?.metadata?.uuid === id) {
+          history.push('/')
+        }
+        break
+      default:
+        console.error('Not part of the action')
+    }
   }
 
   useEffect(() => {

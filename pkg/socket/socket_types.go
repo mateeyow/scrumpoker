@@ -30,6 +30,7 @@ const (
 	WSActionStart WSAction = "start"
 	WSActionReset WSAction = "reset"
 	WSActionVote  WSAction = "vote"
+	WSActionKick  WSAction = "kick"
 )
 
 // WSData will be the primary message being circulated among the scrum master
@@ -40,6 +41,7 @@ type WSData struct {
 }
 
 type WSResponse struct {
-	Action WSAction    `json:"action"`
-	Data   interface{} `json:"data"`
+	Action   WSAction    `json:"action"`
+	Data     interface{} `json:"data"`
+	Metadata interface{} `json:"metadata"`
 }

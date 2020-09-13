@@ -9,13 +9,14 @@ import Input from 'components/forms/Input'
 import Button from 'components/buttons/Button'
 import CardWithDetails from 'components/card/CardWithDetails'
 import actions from 'constants/actions'
-import { noop, sendAction } from 'utils/utils'
+import { sendAction } from 'utils/utils'
 
 const SessionMaster = () => {
   const { roomId } = useParams()
   const history = useHistory()
   const [btnText, setBtnText] = useState('Copy URL')
   const [members, setMembers] = useState([])
+  const [isStarted, setIsStarted] = useState(false)
   const [room, isLoading, error] = useFetch(`room/${roomId}`)
   const socket = useWS(room)
 
@@ -42,7 +43,10 @@ const SessionMaster = () => {
         setMembers(memberData)
         break
       case actions.START:
+      case actions.RESET:
+      case actions.KICK:
         setMembers(msg.data?.participants)
+        setIsStarted(msg.data?.hasStarted)
         break
       default:
         console.error('Not part of the action')
@@ -66,6 +70,8 @@ const SessionMaster = () => {
     if (room?.participants?.length > 0) {
       setMembers(room.participants)
     }
+
+    setIsStarted(room?.hasStarted || false)
   }, [room])
 
   const copyToClipboard = () => {
@@ -76,13 +82,17 @@ const SessionMaster = () => {
     setBtnText('Copied!')
   }
 
-  const onDeleteRoom = async () => {
+  const handleDeleteRoom = async () => {
     try {
       await fetch.delete(`room/${roomId}`)
       history.push('/')
     } catch (err) {
       console.error(err)
     }
+  }
+
+  const handleRemove = (member) => {
+    socket.send(sendAction(actions.KICK, member))
   }
 
   if (error?.response?.status === 404) {
@@ -97,7 +107,7 @@ const SessionMaster = () => {
     <div className='prose max-w-none flex flex-col items-center mt-6'>
       <HTMLTitle title={room.title} />
       <Container className='pt-5'>
-        <Button className='self-start bg-red-600' kind='danger' onClick={onDeleteRoom}>
+        <Button className='self-start bg-red-600' kind='danger' onClick={handleDeleteRoom}>
           Delete Session
         </Button>
         <div className='flex mt-6 w-full justify-center'>
@@ -122,17 +132,18 @@ const SessionMaster = () => {
         <h1 className='pt-6 mr-4'>{room.title}</h1>
         <Button
           onClick={() => {
-            socket.send(sendAction(actions.START))
+            const action = isStarted ? actions.RESET : actions.START
+            socket.send(sendAction(action))
           }}
         >
-          Start Voting
+          {isStarted ? 'Reset Voting' : 'Start Voting'}
         </Button>
       </div>
       <Container className='lg:w-10/12'>
         <div className='flex justify-around w-full flex-wrap'>
           {members.map((member) => (
             <div className='w-1/6' key={member.uuid}>
-              <CardWithDetails data={member} onClick={noop} />
+              <CardWithDetails data={member} onRemove={() => handleRemove(member)} />
             </div>
           ))}
         </div>
