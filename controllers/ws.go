@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -24,6 +25,7 @@ func Websocket(hub *socket.Hub, ctx echo.Context) (err error) {
 	rID := ctx.Param("roomId")
 	upgrader.CheckOrigin = func(r *http.Request) bool {
 		host := r.Host
+		fmt.Printf("host: %#v\n\n", host)
 		if strings.Contains(host, "localhost") || strings.Contains(host, "mateeyow.com") {
 			return true
 		}
