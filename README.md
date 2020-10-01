@@ -29,3 +29,5 @@ TODO:
   - [ ] Fix UI/UX
   - [ ] Add ability to connecto to JIRA
   - [ ] Add some metrics for SCRUM master
+  - [ ] Add a way to see logs
+  - [ ] Create a CI/CD pipeline
