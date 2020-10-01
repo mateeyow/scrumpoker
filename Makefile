@@ -12,3 +12,8 @@ sc:
 
 build:
 	go build server.go
+
+server:
+	go mod vendor
+	make build
+	sudo service scrum restart

@@ -1,7 +1,7 @@
 const getUrl = (url) => {
   const { host, protocol } = window.location
   const wsProtocol = protocol === 'http:' ? 'ws' : 'wss'
-  const uri = host.includes('localhost') ? 'localhost:1323' : host
+  const uri = host.includes('localhost') ? 'localhost:1323' : `api.${host}`
   return `${wsProtocol}://${uri}/ws/${url}`
 }
 
