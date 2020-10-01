@@ -9,3 +9,6 @@ start-client:
 
 sc:
 	make start-client
+
+build:
+	go build server.go
